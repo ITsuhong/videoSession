@@ -12,6 +12,7 @@ interface HomeCardProps {
 const HomeCard = ({className, img, title, description, handleClick}: HomeCardProps) => {
     return (
         <div
+            onClick={handleClick}
             className={cn('p-4  rounded-xl  cursor-pointer min-h-[200px] flex flex-col justify-between', className)}>
             <div className="flex-center bgCover size-10 rounded-[10px]">
                 <Image src={img} alt="meeting" width={17} height={17}/>
