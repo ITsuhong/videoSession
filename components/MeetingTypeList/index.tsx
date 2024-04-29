@@ -81,6 +81,9 @@ const MeetingTypeList = () => {
           title="会议记录"
           description="Meeting recordings"
           className="bg-[#f9a90e]"
+          handleClick={() => {
+            router.push('/recordings');
+          }}
         />
       </div>
       {/*<div className="grid grid-cols-2 gap-5 ">*/}
