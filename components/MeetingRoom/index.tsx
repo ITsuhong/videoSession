@@ -59,7 +59,7 @@ const MeetingRoom = () => {
     }
   };
   return (
-    <section className="relative h-screen w-full overflow-hidden pt-4 text-white">
+    <section className=" relative h-screen w-full overflow-hidden pt-4 text-white">
       <VideoLayout />
       <div
         className={cn('h-screen bg-dark-1 absolute right-0 top-0 px-6 ', {

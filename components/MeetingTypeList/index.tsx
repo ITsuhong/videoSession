@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import HomeCard from './HomeCard';
+import toast from 'react-hot-toast';
 import MeetingCard from '@/components/MeetingCard';
 import MeetingModal from '@/components/MeetingModal';
 import { useState } from 'react';
@@ -26,7 +27,9 @@ const MeetingTypeList = () => {
   const client = useStreamVideoClient();
   const { user } = useUser();
   const [meetingLink, setMeetingLink] = useState('');
+  const [nowMeetingDes, SetNowMeetingDes] = useState('');
   const createMeeting = async () => {
+    const toastId = toast.loading('创建中...');
     if (!client || !user) return;
     if (!values.dateTime) {
       // toast({ title: 'Please select a date and time' });
@@ -37,7 +40,7 @@ const MeetingTypeList = () => {
     if (!call) throw new Error('Failed to create meeting');
     const startsAt =
       values.dateTime.toISOString() || new Date(Date.now()).toISOString();
-    const description = values.description || 'Instant Meeting';
+    const description = nowMeetingDes || 'Instant Meeting';
     await call.getOrCreate({
       data: {
         starts_at: startsAt,
@@ -47,6 +50,15 @@ const MeetingTypeList = () => {
       },
     });
     setCallDetail(call);
+    toast.dismiss();
+    toast('创建成功', {
+      icon: '👏',
+      style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+      },
+    });
     router.push(`/meeting/${call.id}`);
   };
   return (
@@ -54,7 +66,7 @@ const MeetingTypeList = () => {
       <div className="grid grid-cols-1 gap-5 mt-4 md:grid-cols-2 lg:grid-cols-4">
         <HomeCard
           img="/icons/add-meeting.svg"
-          title="新建会议"
+          title="即时会议"
           description="Setup a new recording"
           className="bg-[#ff742e]"
           handleClick={() => {
@@ -85,6 +97,15 @@ const MeetingTypeList = () => {
             router.push('/recordings');
           }}
         />
+        <HomeCard
+          img="/icons/recordings.svg"
+          title="会议回放"
+          description="Meeting recordings"
+          className="bg-[#4cd137]"
+          handleClick={() => {
+            router.push('/playback');
+          }}
+        />
       </div>
       {/*<div className="grid grid-cols-2 gap-5 ">*/}
       {/*    <MeetingCard/>*/}
@@ -94,19 +115,28 @@ const MeetingTypeList = () => {
           createMeeting();
         }}
         title="Start an Instant Meeting"
-        buttonText="Create Meeting"
+        buttonText="创建&进入会议"
         isOpen={meetingState === 'isInstantMeeting'}
         onClose={() => {
           setMeetingState(undefined);
         }}
-      />
+      >
+        <Input
+          placeholder="会议描述"
+          onChange={(e) => {
+            SetNowMeetingDes(e.target.value);
+            // console.log(e.target.value);
+          }}
+          className="border-none bg-dark-3 focus-visible:ring-0 focus-visible:ring-offset-0"
+        />
+      </MeetingModal>
       <MeetingModal
         handleClick={() => {
           // createMeeting();
           router.push(meetingLink);
         }}
         title="Join a Meeting"
-        buttonText="Join Meeting"
+        buttonText="加入会议"
         isOpen={meetingState === 'isJoiningMeeting'}
         onClose={() => {
           setMeetingState(undefined);

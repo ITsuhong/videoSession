@@ -4,24 +4,28 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Copy } from 'lucide-react';
 import { useGetCalls } from '@/hooks/useGetCalls';
-import { Call, useStreamVideoClient } from '@stream-io/video-react-sdk';
+import {
+  Call,
+  useStreamVideoClient,
+  CallRecording,
+} from '@stream-io/video-react-sdk';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 type MeetingType = 'playback' | 'start' | 'progress';
 // type MeetingType=
-const MeetingCard = ({ call, type }: { call: Call; type: MeetingType }) => {
+const MeetingCard = ({ callRecording }: { callRecording: CallRecording }) => {
   const client = useStreamVideoClient();
   const router = useRouter();
 
-  const description = call?.state?.custom?.description;
-  const startTime = dayjs(call?.state?.createdAt).format('YYYY-MM-DD HH:mm:ss');
-  const JoinMeeting = () => {
-    router.push(`/meeting/${call.id}`);
-  };
+  const description = callRecording?.filename;
+  const startTime = dayjs(callRecording?.start_time).format(
+    'YYYY-MM-DD HH:mm:ss',
+  );
+
   const CopyLink = () => {
-    const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${call?.id}`;
+    const meetingLink = callRecording.url;
     navigator.clipboard.writeText(meetingLink);
     toast('链接复制成功！', {
       icon: '👏',
@@ -31,6 +35,9 @@ const MeetingCard = ({ call, type }: { call: Call; type: MeetingType }) => {
         color: '#fff',
       },
     });
+  };
+  const Play = () => {
+    router.push(callRecording.url);
   };
   return (
     <section className="p-4 rounded-xl bg-[#1c1f2e] text-white">
@@ -54,29 +61,27 @@ const MeetingCard = ({ call, type }: { call: Call; type: MeetingType }) => {
             +5
           </div>
         </div>
-        {type === 'progress' && (
-          <div className="flex gap-3">
-            <Button
-              onClick={() => {
-                JoinMeeting();
-              }}
-              className="bg-green-500"
-              size="sm"
-            >
-              加入会议
-            </Button>
-            <Button
-              onClick={() => {
-                CopyLink();
-              }}
-              className="bg-dark-3"
-              size="sm"
-            >
-              <Copy size={18} />
-              <p className="ml-1">复制链接</p>
-            </Button>
-          </div>
-        )}
+        <div className="flex gap-3">
+          <Button
+            onClick={() => {
+              Play();
+            }}
+            className="bg-green-500"
+            size="sm"
+          >
+            播放录像
+          </Button>
+          <Button
+            onClick={() => {
+              CopyLink();
+            }}
+            className="bg-dark-3"
+            size="sm"
+          >
+            <Copy size={18} />
+            <p className="ml-1">分享链接</p>
+          </Button>
+        </div>
       </div>
     </section>
   );
