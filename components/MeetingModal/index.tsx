@@ -14,6 +14,7 @@ interface meetingModalProp {
   title: string;
   buttonText?: string;
   handleClick: () => void;
+  children?: React.ReactNode;
 }
 
 const MeetingModal = ({
@@ -22,6 +23,7 @@ const MeetingModal = ({
   title,
   buttonText,
   handleClick,
+  children,
 }: meetingModalProp) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -29,6 +31,7 @@ const MeetingModal = ({
         <div className="text-2xl font-bold leading-[42px flex justify-center">
           {title}
         </div>
+        {children}
         <Button
           className={
             'bg-blue-1 focus-visible:ring-0 focus-visible:ring-offset-0'

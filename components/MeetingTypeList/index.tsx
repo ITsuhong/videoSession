@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStreamVideoClient, Call } from '@stream-io/video-react-sdk';
 import { useUser } from '@clerk/nextjs';
+import { Input } from '@/components/ui/input';
 // import { Call } from '@stream-io/node-sdk';
 
 const initialValues = {
@@ -24,6 +25,7 @@ const MeetingTypeList = () => {
   const [callDetail, setCallDetail] = useState<Call>();
   const client = useStreamVideoClient();
   const { user } = useUser();
+  const [meetingLink, setMeetingLink] = useState('');
   const createMeeting = async () => {
     if (!client || !user) return;
     if (!values.dateTime) {
@@ -64,6 +66,9 @@ const MeetingTypeList = () => {
           title="加入会议"
           description="via invitation link"
           className="bg-[#0e78f9]"
+          handleClick={() => {
+            setMeetingState('isJoiningMeeting');
+          }}
         />
         <HomeCard
           img="/icons/schedule.svg"
@@ -92,6 +97,27 @@ const MeetingTypeList = () => {
           setMeetingState(undefined);
         }}
       />
+      <MeetingModal
+        handleClick={() => {
+          // createMeeting();
+          router.push(meetingLink);
+        }}
+        title="Join a Meeting"
+        buttonText="Join Meeting"
+        isOpen={meetingState === 'isJoiningMeeting'}
+        onClose={() => {
+          setMeetingState(undefined);
+        }}
+      >
+        <Input
+          placeholder="会议链接"
+          onChange={(e) => {
+            setMeetingLink(e.target.value);
+            // console.log(e.target.value);
+          }}
+          className="border-none bg-dark-3 focus-visible:ring-0 focus-visible:ring-offset-0"
+        />
+      </MeetingModal>
     </section>
   );
 };
